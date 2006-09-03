@@ -27,10 +27,10 @@ use strict;
 use DirHandle;
 use Term::ANSIColor;
 
-# - init vars & contants >
+# - init vars & constants >
 my $VERSION			= "0.10";
 my $portdir			= getPortdir();
-my @scan_portage_categories	= ("dev-perl","perl-core");
+my @scan_portage_categories	= ("dev-perl","perl-core","perl-gcpan");
 my $pkgdbdir			= "/var/db/pkg/";
 my %excludeDirs			= ("." => 1, ".." => 1, "metadata" => 1, "licenses" => 1, "eclass" => 1, "distfiles" => 1, "virtual" => 1, "profiles" => 1 , "CVS" => 1);
 
