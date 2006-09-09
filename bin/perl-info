@@ -4,9 +4,9 @@
 #
 # perl-info
 #
-# date        : 2006-09-02
+# date        : 2006-09-10
 # author      : Christian Hartmann <ian@gentoo.org>
-# version     : 0.10
+# version     : 0.11
 # license     : GPL-2
 # description : 'emerge --info' for perl
 #
@@ -28,7 +28,7 @@ use DirHandle;
 use Term::ANSIColor;
 
 # - init vars & constants >
-my $VERSION			= "0.10";
+my $VERSION			= "0.11";
 my $portdir			= getPortdir();
 my @scan_portage_categories	= ("dev-perl","perl-core","perl-gcpan");
 my $pkgdbdir			= "/var/db/pkg/";
@@ -300,46 +300,15 @@ sub getFileContents
 }
 
 # Description:
-# @listOfEbuilds = getAvailableEbuilds($PORTDIR, category/packagename);
-sub getAvailableEbuilds
-{
-	my $PORTDIR	= shift;
-	my $catPackage	= shift;
-	my @packagelist	= ();
-	
-	if (-e $PORTDIR."/".$catPackage)
-	{
-		# - get list of ebuilds >
-		my $dh = new DirHandle($PORTDIR."/".$catPackage);
-		while (defined($_ = $dh->read))
-		{
-			if ($_ =~ m/(.+)\.ebuild$/)
-			{
-				push(@packagelist,$_);
-			}
-		}
-	}
-	
-	return @packagelist;
-}
-
-# Description:
-# Returns version of an ebuild. (Without -rX string etc.)
-# $version = getEbuildVersionSpecial("foo-1.23-r1.ebuild");
-sub getEbuildVersionSpecial
-{
-	my $ebuildVersion = shift;
-	$ebuildVersion=substr($ebuildVersion,0,length($ebuildVersion)-7);
-	$ebuildVersion =~ s/^([a-zA-Z0-9\-_\/\+]*)-([0-9\.]+[a-zA-Z]?)([\-r|\-rc|_alpha|_beta|_pre|_p]?)/$2$3/;
-		
-	return $ebuildVersion;
-}
-
+# Returnvalue is PORTDIR from make.conf or make.globals (make.conf overrules make.globals).
+# $portdir = getPortdir();
 sub getPortdir
 {
 	return getParamFromFile(getFileContents("/etc/make.globals").getFileContents("/etc/make.conf"),"PORTDIR","lastseen");
 }
 
+# Description:
+# Prints a fancy header.
 sub printHeader
 {
 	print "\n";
@@ -393,7 +362,7 @@ perl-info - gather systems perl info
 
 =head1 VERSION
 
-This document refers to version 0.10 of perl-info
+This document refers to version 0.11 of perl-info
 
 =head1 SYNOPSIS
 
