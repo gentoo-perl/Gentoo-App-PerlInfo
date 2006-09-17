@@ -291,10 +291,8 @@ sub getParamFromFile
 # $filecontent = getFileContents($file);
 sub getFileContents
 {
-	my $content	= "";
-	
 	open(FH,"<".$_[0]) || die("Cannot open file ".$_[0]);
-	while(<FH>) { $content.=$_; }
+	my $content = do{local $/; <FH>};
 	close(FH);
 	return $content;
 }
@@ -348,7 +346,7 @@ sub getUseSettingsOfPackage
 				last;
 			}
 		}
-		push(@USEs,$hasuse.$thisIUSE);
+		push(@USEs,$hasuse.$thisIUSE) unless ($thisIUSE eq "");
 	}
 	
 	return @USEs;
