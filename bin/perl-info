@@ -4,9 +4,9 @@
 #
 # perl-info
 #
-# date        : 2006-09-24
+# date        : 2006-11-12
 # author      : Christian Hartmann <ian@gentoo.org>
-# version     : 0.12
+# version     : 0.13
 # license     : GPL-2
 # description : 'emerge --info' for perl
 #
@@ -24,307 +24,53 @@
 # - modules >
 use warnings;
 use strict;
-use DirHandle;
 use Term::ANSIColor;
+use PortageXS;
 
 # - init vars & constants >
-my $VERSION			= "0.12";
-my $portdir			= getPortdir();
-my @scan_portage_categories	= ("dev-perl","perl-core","perl-gcpan");
-my $pkgdbdir			= "/var/db/pkg/";
-my %excludeDirs			= ("." => 1, ".." => 1, "metadata" => 1, "licenses" => 1, "eclass" => 1, "distfiles" => 1, "virtual" => 1, "profiles" => 1 , "CVS" => 1);
+my $VERSION			= "0.13";
+my $pxs				= PortageXS->new();
 
 # - Print header >
-printHeader();
+print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION." - brought to you by the Gentoo perl-herd-maintainer ;-)\n";
+print "                          Distributed under the terms of the GPL-2\n\n";
 
 # - Do some basic checks >
-if (!-d $portdir) {
+if (!-d $pxs->getPortdir()) {
 	print_err("PORTDIR not set or incorrect! Aborting..\n");
 	exit(0);
 }
 
-if (!-d $pkgdbdir) {
-	print_err("/var/db/pkg inaccessible? Aborting..\n");
-	exit(0);
-}
-
 # - Start system analysis >
-print_ok("Perl   : ".(searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",getUseSettingsOfInstalledPackage("dev-lang/perl"))."\"\n");
-print_ok("libperl: ".(searchInstalledPackage("sys-devel/libperl"))[0]." USE=\"".join(" ",getUseSettingsOfInstalledPackage("sys-devel/libperl"))."\"\n");
+$pxs->print_ok("Systeminfo:\n");
+print "   Arch   : ".$pxs->getArch()."\n";
+print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage("dev-lang/perl"))."\"\n";
+print "   libperl: ".($pxs->searchInstalledPackage("sys-devel/libperl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage("sys-devel/libperl"))."\"\n";
 print "\n";
 
-print_ok("INC:\n");
+$pxs->print_ok("INC:\n");
 foreach (@INC) {
 	print "   ".$_."\n";
 }
 print "\n";
 
-foreach my $this_category (@scan_portage_categories) {
+foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	my $category_str_length = length($this_category)+1;
-	print_ok("Installed packages from category ".$this_category.":\n");
-	foreach(searchInstalledPackage($this_category."/*")) {
-		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",getUseSettingsOfInstalledPackage($_))."\"\n";
+	$pxs->print_ok("Installed packages from category ".$this_category.":\n");
+	foreach($pxs->searchInstalledPackage($this_category."/*")) {
+		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage($_))."\"\n";
 	}
 	print "\n";
 }
 
-print_ok("eclasses:\n"); 
+$pxs->print_ok("eclasses:\n");
 foreach my $eclassName ("perl-app","perl-module","perl-post") {
-	my $eclass = getFileContents($portdir."/eclass/".$eclassName.".eclass");
+	my $eclass = $pxs->getFileContents($pxs->getPortdir()."/eclass/".$eclassName.".eclass");
 	$eclass =~ s/\$Header: ([a-zA-Z0-9\/\.,-]+) ([0-9\.]+)/$2/g;
 	print "   ".$eclassName.": ".$2."\n";
 }
 print "\n";
 exit(0);
-
-# -----------------------------------------------------------------------------
-# subs >
-# -----------------------------------------------------------------------------
-
-# Description:
-# Returns an array containing all installed packages that match $searchString
-# @packages = searchInstalledPackage($searchString);
-sub searchInstalledPackage {
-	my $searchString		= shift; if (! $searchString) { $searchString=""; }
-	
-	my $int_c			= 0;
-	my $dhc;
-	my $dhp;
-	my $tc;
-	my $tp;
-	my @matches			= ();
-	
-	my $s_cat			= "";
-	my $s_pak			= "";
-	my $m_cat			= 0;
-	
-	# - escape special chars >
-	$searchString =~ s/\+/\\\+/g;
-
-	# - split >
-	if ($searchString=~m/\//) {
-		($s_cat,$s_pak)=split(/\//,$searchString);
-	}
-	else {
-		$s_pak=$searchString;
-	}
-	
-	$s_cat=~s/\*//g;
-	$s_pak=~s/\*//g;
-	
-	# - read categories >
-	$dhc = new DirHandle($pkgdbdir);
-	if (defined $dhc) {
-		while (defined($tc = $dhc->read)) {
-			$m_cat=0;
-			if ($s_cat ne "") {
-				if ($tc=~m/$s_cat/i) {
-					$m_cat=1;
-				}
-				else {
-					next;
-				}
-			}
-			
-			# - not excluded and $_ is a dir?
-			if (! $excludeDirs{$tc} && -d $pkgdbdir."/".$tc) {
-				$dhp = new DirHandle($pkgdbdir."/".$tc);
-				while (defined($tp = $dhp->read)) {
-					# - check if packagename matches
-					#   (faster if we already check it now) >
-					if ($tp =~m/$s_pak/i || $s_pak eq "") {
-						# - not excluded and $_ is a dir?
-						if (! $excludeDirs{$tp} && -d $pkgdbdir."/".$tc."/".$tp) {
-							if (($s_cat ne "") && ($m_cat)) {
-								push(@matches,$tc."/".$tp);
-							}
-							elsif ($s_cat eq "") {
-								push(@matches,$tc."/".$tp);
-							}
-						}
-					}
-				}
-				undef $dhp;
-			}
-		}
-	}
-	undef $dhc;
-	
-	return (sort @matches);
-}
-
-# Description:
-# Returns the value of $param. Expects filecontents in $file.
-# $valueOfKey = getParamFromFile($filecontents,$key);
-# e.g.
-# $valueOfKey = getParamFromFile(getFileContents("/path/to.ebuild","IUSE","firstseen");
-sub getParamFromFile {
-	my $file  = shift;
-	my $param = shift;
-	my $mode  = shift; # ("firstseen","lastseen") - default is "lastseen"
-	my $c     = 0;
-	my $d     = 0;
-	my @lines = ();
-	my @aTmp  = (); # temp (a)rray
-	my $sTmp  = ""; # temp (s)calar
-	my $text  = ""; # complete text/file after being cleaned up and striped
-	my $value = ""; # value of $param
-	my $this  = "";
-	
-	# - 1. split file in lines >
-	@lines = split(/\n/,$file);
-
-	# - 2 & 3 >
-	for($c=0;$c<=$#lines;$c++) {
-		# - 2. remove leading and trailing whitespaces and tabs from every line >
-		$lines[$c]=~s/^[ |\t]+//;  # leading whitespaces and tabs
-		$lines[$c]=~s/[ |\t]+$//;  # trailing whitespaces and tabs
-		
-		# - 3. remove comments >
-		$lines[$c]=~s/#(.*)//g;
-		
-		if ($lines[$c]=~/^$param="(.*)"/) {
-			# single-line with quotationmarks >
-			$value=$1;
-		
-			if ($mode eq "firstseen") {
-				# - 6. clean up value >
-				$value=~s/^[ |\t]+//; # remove leading whitespaces and tabs
-				$value=~s/[ |\t]+$//; # remove trailing whitespaces and tabs
-				$value=~s/\t/ /g;     # replace tabs with whitespaces
-				$value=~s/ {2,}/ /g;  # replace 1+ whitespaces with 1 whitespace
-				return $value;
-			}
-		}
-		elsif ($lines[$c]=~/^$param="(.*)/) {
-			# multi-line with quotationmarks >
-			$value=$1." ";
-			for($d=$c+1;$d<=$#lines;$d++) {
-				# - look for quotationmark >
-				if ($lines[$d]=~/(.*)"/) {
-					# - found quotationmark; append contents and leave loop >
-					$value.=$1;
-					last;
-				}
-				else {
-					# - no quotationmark found; append line contents to $value >
-					$value.=$lines[$d]." ";
-				}
-			}
-		
-			if ($mode eq "firstseen") {
-				# - 6. clean up value >
-				$value=~s/^[ |\t]+//; # remove leading whitespaces and tabs
-				$value=~s/[ |\t]+$//; # remove trailing whitespaces and tabs
-				$value=~s/\t/ /g;     # replace tabs with whitespaces
-				$value=~s/ {2,}/ /g;  # replace 1+ whitespaces with 1 whitespace
-				return $value;
-			}
-		}
-		elsif ($lines[$c]=~/^$param=(.*)/) {
-			# - single-line without quotationmarks >
-			$value=$1;
-			
-			if ($mode eq "firstseen") {
-				# - 6. clean up value >
-				$value=~s/^[ |\t]+//; # remove leading whitespaces and tabs
-				$value=~s/[ |\t]+$//; # remove trailing whitespaces and tabs
-				$value=~s/\t/ /g;     # replace tabs with whitespaces
-				$value=~s/ {2,}/ /g;  # replace 1+ whitespaces with 1 whitespace
-				return $value;
-			}
-		}
-	}
-	
-	# - 6. clean up value >
-	$value=~s/^[ |\t]+//; # remove leading whitespaces and tabs
-	$value=~s/[ |\t]+$//; # remove trailing whitespaces and tabs
-	$value=~s/\t/ /g;     # replace tabs with whitespaces
-	$value=~s/ {2,}/ /g;  # replace 1+ whitespaces with 1 whitespace
-	
-	return $value;
-}
-
-# Description:
-# Returnvalue is the content of the given file.
-# $filecontent = getFileContents($file);
-sub getFileContents {
-	open(FH,"<".$_[0]) || die("Cannot open file ".$_[0]);
-	my $content = do{local $/; <FH>};
-	close(FH);
-	return $content;
-}
-
-# Description:
-# Returnvalue is PORTDIR from make.conf or make.globals (make.conf overrules make.globals).
-# $portdir = getPortdir();
-sub getPortdir {
-	return getParamFromFile(getFileContents("/etc/make.globals").getFileContents("/etc/make.conf"),"PORTDIR","lastseen");
-}
-
-# Description:
-# Prints a fancy header.
-sub printHeader {
-	print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION." - brought to you by the Gentoo perl-herd-maintainer ;-)\n";
-	print "                          Distributed under the terms of the GPL-2\n\n";
-}
-
-# Description:
-# Returns useflag settings of the given (installed) package.
-# @useflags = $pxs->getUseSettingsOfInstalledPackage("dev-perl/perl-5.8.8-r3");
-sub getUseSettingsOfInstalledPackage {
-	my $package		= shift;
-	my $packagepath		= (searchInstalledPackage($package))[0];
-	my $tmp_filecontents	= "";
-	my @package_IUSE	= ();
-	my @package_USE		= ();
-	my @USEs		= ();
-	
-	$tmp_filecontents	= getFileContents($pkgdbdir."/".$packagepath."/IUSE");
-	$tmp_filecontents	=~s/\n//g;
-	@package_IUSE		= split(/ /,$tmp_filecontents);
-	$tmp_filecontents	= getFileContents($pkgdbdir."/".$packagepath."/USE");
-	$tmp_filecontents	=~s/\n//g;
-	@package_USE		= split(/ /,$tmp_filecontents);
-	
-	foreach my $thisIUSE (@package_IUSE) {
-		next if ($thisIUSE eq "");
-		my $hasuse = "-";
-		foreach my $thisUSE (@package_USE) {
-			if ($thisIUSE eq $thisUSE) {
-				$hasuse="";
-				last;
-			}
-		}
-		push(@USEs,$hasuse.$thisIUSE);
-	}
-	
-	return @USEs;
-}
-
-# Description:
-# Prints gentoo-style items.
-sub printColored {
-	print ' ' . color(shift) . '* ' . color("reset") . shift() , @_;
-}
-
-# Description:
-# Wrapper for printColored >
-sub print_ok {
-	printColored('green bold',shift);
-}
-
-# Description:
-# Wrapper for printColored >
-sub print_err {
-	printColored('red bold',shift);
-}
-
-# Description:
-# Wrapper for printColored >
-sub print_info {
-	printColored('yellow bold',shift);
-}
 
 # - Here comes the POD >
 
@@ -334,7 +80,7 @@ perl-info - gather systems perl info
 
 =head1 VERSION
 
-This document refers to version 0.12 of perl-info
+This document refers to version 0.13 of perl-info
 
 =head1 SYNOPSIS
 
