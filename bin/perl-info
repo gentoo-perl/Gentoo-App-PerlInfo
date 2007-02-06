@@ -4,9 +4,9 @@
 #
 # perl-info
 #
-# date        : 2006-11-12
+# date        : 2007-02-06
 # author      : Christian Hartmann <ian@gentoo.org>
-# version     : 0.13
+# version     : 0.14
 # license     : GPL-2
 # description : 'emerge --info' for perl
 #
@@ -28,8 +28,16 @@ use Term::ANSIColor;
 use PortageXS;
 
 # - init vars & constants >
-my $VERSION			= "0.13";
+my $VERSION			= "0.14";
 my $pxs				= PortageXS->new();
+my @perlGetVars			= qw(osname osvers archname uname useposix usethreads use5005threads
+				     useithreads usemultiplicity useperlio uselargefiles usesocks use64bitint
+				     use64bitall uselongdouble usemymalloc bincompat5005 cc ccflags optimize
+				     cppflags ccversion gccversion gccosandver intsize longsize ptrsize doublesize
+				     byteorder d_longlong longlongsize d_longdbl longdblsize ivtype ivsize nvtype
+				     nvsize Off_t lseeksize alignbytes prototype ld ldflags libpth libs perllibs
+				     libc so useshrplib libperl gnulibc_version dlsrc dlext d_dlsymun ccdlflags
+				     cccdlflags lddlflags);
 
 # - Print header >
 print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION." - brought to you by the Gentoo perl-herd-maintainer ;-)\n";
@@ -48,6 +56,12 @@ print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"
 print "   libperl: ".($pxs->searchInstalledPackage("sys-devel/libperl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage("sys-devel/libperl"))."\"\n";
 print "\n";
 
+$pxs->print_ok("Perl configuration:\n");
+foreach (sort(@perlGetVars)) {
+	print "   ".`perl -V:$_`;
+}
+print "\n";
+
 $pxs->print_ok("INC:\n");
 foreach (@INC) {
 	print "   ".$_."\n";
@@ -60,6 +74,7 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	foreach($pxs->searchInstalledPackage($this_category."/*")) {
 		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage($_))."\"\n";
 	}
+	print "   none\n" if (!($pxs->searchInstalledPackage($this_category."/*"))[0]);
 	print "\n";
 }
 
@@ -80,7 +95,7 @@ perl-info - gather systems perl info
 
 =head1 VERSION
 
-This document refers to version 0.13 of perl-info
+This document refers to version 0.14 of perl-info
 
 =head1 SYNOPSIS
 
@@ -110,7 +125,7 @@ Please report bugs via http://bugs.gentoo.org/ or https://bugs.gentoo.org/
 =head1 LICENSE
 
 perl-info - gather systems perl info
-Copyright (C) 2006  Christian Hartmann
+Copyright (C) 2006, 2007  Christian Hartmann
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
