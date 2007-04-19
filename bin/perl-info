@@ -4,9 +4,9 @@
 #
 # perl-info
 #
-# date        : 2007-02-06
+# date        : 2007-04-19
 # author      : Christian Hartmann <ian@gentoo.org>
-# version     : 0.14
+# version     : 0.15
 # license     : GPL-2
 # description : 'emerge --info' for perl
 #
@@ -28,7 +28,7 @@ use Term::ANSIColor;
 use PortageXS;
 
 # - init vars & constants >
-my $VERSION			= "0.14";
+my $VERSION			= '0.15';
 my $pxs				= PortageXS->new();
 my @perlGetVars			= qw(osname osvers archname uname useposix usethreads use5005threads
 				     useithreads usemultiplicity useperlio uselargefiles usesocks use64bitint
@@ -52,8 +52,8 @@ if (!-d $pxs->getPortdir()) {
 # - Start system analysis >
 $pxs->print_ok("Systeminfo:\n");
 print "   Arch   : ".$pxs->getArch()."\n";
-print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage("dev-lang/perl"))."\"\n";
-print "   libperl: ".($pxs->searchInstalledPackage("sys-devel/libperl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage("sys-devel/libperl"))."\"\n";
+print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage(($pxs->searchInstalledPackage("dev-lang/perl"))[0]))."\"\n";
+print "   libperl: ".($pxs->searchInstalledPackage("sys-devel/libperl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage(($pxs->searchInstalledPackage("sys-devel/libperl"))[0]))."\"\n";
 print "\n";
 
 $pxs->print_ok("Perl configuration:\n");
@@ -95,7 +95,7 @@ perl-info - gather systems perl info
 
 =head1 VERSION
 
-This document refers to version 0.14 of perl-info
+This document refers to version 0.15 of perl-info
 
 =head1 SYNOPSIS
 
