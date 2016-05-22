@@ -24,7 +24,6 @@ use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
 
 my $pxs = $instance->_pxs;
-my @perlGetVars = @{ $instance->config_vars };
 
 # - Print header >
 print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION." - brought to you by the Gentoo perl-herd-maintainer ;-)\n";
@@ -43,8 +42,8 @@ print "   Perl   : ". $instance->package_installed("dev-lang/perl") . "\n";
 print "\n";
 
 $pxs->colors->print_ok("Perl configuration:\n");
-foreach (sort(@perlGetVars)) {
-	print "   ".`perl -V:$_`;
+foreach ($instance->perl_config) {
+	print "   $_\n";
 }
 print "\n";
 

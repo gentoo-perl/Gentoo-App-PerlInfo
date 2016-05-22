@@ -8,6 +8,7 @@
    CVS Headers
  - perl-functions.eclass included in eclass report
  - virtual/perl-* data included in installed package report
+ - use Config.pm instead of looping `perl -V:fieldname`
 
 0.16 - 2010-11-03
  - Remove perl-post.eclass from reported eclass list

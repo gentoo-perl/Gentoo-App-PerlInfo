@@ -14,6 +14,7 @@ use Term::ANSIColor;
 use PortageXS v0.3.0;
 use Path::Tiny qw( path );
 use Digest::SHA1 qw( sha1_hex );
+use Config qw( %Config );
 
 sub new {
     my ( $class, @args ) = @_;
@@ -75,6 +76,22 @@ sub eclass_desc {
 
 sub _pxs        { $_[0]->{_pxs} }
 sub config_vars { $_[0]->{config_vars} }
+
+sub perl_config {
+    my @out;
+    for my $var ( sort @{ $_[0]->config_vars } ) {
+        if ( exists $Config{$var} and defined $Config{$var} ) {
+            push @out, $var . '="' . $Config{$var} . '"';
+        }
+        elsif ( exists $Config{$var} ) {
+            push @out, $var . '=undef';
+        }
+        else {
+            push @out, $var . ': does not exist';
+        }
+    }
+    return @out;
+}
 1;
 
 __END__
