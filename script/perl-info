@@ -58,7 +58,7 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	my $category_str_length = length($this_category)+1;
 	$pxs->colors->print_ok("Installed packages from category ".$this_category.":\n");
 	foreach($pxs->searchInstalledPackage($this_category."/*")) {
-		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage($_))."\"\n";
+		print "   ".substr($_,$category_str_length,length($_)-$category_str_length). " " . $instance->use_for($_) . "\n";
 	}
 	print "   none\n" if (!($pxs->searchInstalledPackage($this_category."/*"))[0]);
 	print "\n";
@@ -71,7 +71,7 @@ foreach my $this_category ('virtual') {
 	foreach($pxs->searchInstalledPackage($this_category."/*")) {
 		next unless $_ =~ /virtual\/perl-/;
 		$seen++;
-		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage($_))."\"\n";
+		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." " . $instance->use_for($_) . "\n";
 	}
 	print "   none\n" unless $seen;
 	print "\n";
