@@ -95,6 +95,8 @@ sub perl_config {
 
 sub run {
     $_[0]->_print_header;
+    $_[0]->_print_section_label('Systeminfo');
+    $_[0]->_print_system_info;
 }
 
 sub _print_header {
@@ -108,6 +110,20 @@ sub _print_header {
       "${indent} Distributed under the terms of the GPL-2\n",
       "\n";
 }
+
+sub _print_section_label {
+    my ( $self, $label ) = @_;
+    $self->_pxs->colors->print_ok("$label:\n");
+}
+
+sub _print_system_info {
+    my $arch = $_[0]->_pxs->getArch();
+    my $perl = $_[0]->package_installed('dev-lang/perl');
+    printf "  Arch  : %s\n", $arch;
+    printf "  Perl  : %s\n", $perl;
+    print "\n";
+}
+
 1;
 
 __END__

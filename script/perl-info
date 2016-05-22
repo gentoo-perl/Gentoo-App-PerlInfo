@@ -22,18 +22,12 @@ my $VERSION			= '0.17';
 
 use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
-$instance->_print_header;
 
 my $pxs = $instance->_pxs;
 
 # - Do some basic checks >
 die "PORTDIR not set or incorrect! Aborting.." if !-d $pxs->portdir;
-
-# - Start system analysis >
-$pxs->colors->print_ok("Systeminfo:\n");
-print "   Arch   : ".$pxs->getArch()."\n";
-print "   Perl   : ". $instance->package_installed("dev-lang/perl") . "\n";
-print "\n";
+$instance->run;
 
 $pxs->colors->print_ok("Perl configuration:\n");
 foreach ($instance->perl_config) {
