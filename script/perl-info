@@ -33,7 +33,7 @@ print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION.
 print "                          Distributed under the terms of the GPL-2\n\n";
 
 # - Do some basic checks >
-if (!-d $pxs->getPortdir()) {
+if (!-d $pxs->portdir()) {
 	print_err("PORTDIR not set or incorrect! Aborting..\n");
 	exit(0);
 }
@@ -69,7 +69,7 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 
 $pxs->print_ok("eclasses:\n");
 foreach my $eclassName ("perl-app","perl-module") {
-	my $eclass = path($pxs->getPortdir(),"eclass",$eclassName.".eclass")->slurp;
+	my $eclass = path($pxs->portdir(),"eclass",$eclassName.".eclass")->slurp;
 	$eclass =~ s/\$Header: ([a-zA-Z0-9\/\.,-]+) ([0-9\.]+)/$2/g;
 	print "   ".$eclassName.": ".$2."\n";
 }

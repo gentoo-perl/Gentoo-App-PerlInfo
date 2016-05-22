@@ -1,6 +1,7 @@
 0.17 2016-05-23
  - First release on CPAN
  - No longer relies on legacy getFileContents method.
+ - No longer relies on legacy getPortDir method.
 
 0.16 - 2010-11-03
  - Remove perl-post.eclass from reported eclass list
