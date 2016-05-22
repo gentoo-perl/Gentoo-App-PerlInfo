@@ -22,14 +22,7 @@ my $VERSION			= '0.17';
 
 use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
-
 $instance->run;
-
-$instance->_print_section_label("INC");
-foreach (@INC) {
-	print "   ".$_."\n";
-}
-print "\n";
 
 my $pxs = $instance->_pxs;
 foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {

@@ -88,6 +88,8 @@ sub run {
     $_[0]->_print_system_info;
     $_[0]->_print_section_label('Perl configuration');
     $_[0]->_print_perl_config;
+    $_[0]->_print_section_label('INC');
+    $_[0]->_print_inc;
 }
 
 sub _print_header {
@@ -131,6 +133,14 @@ sub _print_perl_config {
         else {
             printf "$indent%-*s   does not exist\n", $max_width, $var;
         }
+    }
+    print "\n";
+}
+
+sub _print_inc {
+    my $indent = "  ";
+    for my $inc (@INC) {
+        printf "$indent%s\n", $inc;
     }
     print "\n";
 }
