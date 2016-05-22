@@ -13,7 +13,7 @@
 use warnings;
 use strict;
 use Term::ANSIColor;
-use PortageXS;
+use PortageXS v0.3.0;
 use Path::Tiny qw( path );
 
 # - init vars & constants >
@@ -39,18 +39,18 @@ if (!-d $pxs->portdir()) {
 }
 
 # - Start system analysis >
-$pxs->print_ok("Systeminfo:\n");
+$pxs->colors->print_ok("Systeminfo:\n");
 print "   Arch   : ".$pxs->getArch()."\n";
 print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage(($pxs->searchInstalledPackage("dev-lang/perl"))[0]))."\"\n";
 print "\n";
 
-$pxs->print_ok("Perl configuration:\n");
+$pxs->colors->print_ok("Perl configuration:\n");
 foreach (sort(@perlGetVars)) {
 	print "   ".`perl -V:$_`;
 }
 print "\n";
 
-$pxs->print_ok("INC:\n");
+$pxs->colors->print_ok("INC:\n");
 foreach (@INC) {
 	print "   ".$_."\n";
 }
@@ -58,7 +58,7 @@ print "\n";
 
 foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	my $category_str_length = length($this_category)+1;
-	$pxs->print_ok("Installed packages from category ".$this_category.":\n");
+	$pxs->colors->print_ok("Installed packages from category ".$this_category.":\n");
 	foreach($pxs->searchInstalledPackage($this_category."/*")) {
 		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage($_))."\"\n";
 	}
@@ -66,7 +66,7 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	print "\n";
 }
 
-$pxs->print_ok("eclasses:\n");
+$pxs->colors->print_ok("eclasses:\n");
 foreach my $eclassName ("perl-app","perl-module") {
 	my $eclass = path($pxs->portdir(),"eclass",$eclassName.".eclass")->slurp;
 	$eclass =~ s/\$Header: ([a-zA-Z0-9\/\.,-]+) ([0-9\.]+)/$2/g;

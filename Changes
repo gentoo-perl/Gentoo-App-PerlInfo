@@ -3,6 +3,7 @@
  - No longer relies on legacy getFileContents method.
  - No longer relies on legacy getPortDir method.
  - No longer queries sys-libs/libperl ( Gone )
+ - Uses modern print_ok methods.
 
 0.16 - 2010-11-03
  - Remove perl-post.eclass from reported eclass list
