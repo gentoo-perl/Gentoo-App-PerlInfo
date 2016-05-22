@@ -93,8 +93,13 @@ sub perl_config {
     return @out;
 }
 
+sub check_env {
+    die "PORTDIR not set or incorrect! Aborting.." if !-d $_[0]->_pxs->portdir;
+}
+
 sub run {
     $_[0]->_print_header;
+    $_[0]->check_env;
     $_[0]->_print_section_label('Systeminfo');
     $_[0]->_print_system_info;
 }

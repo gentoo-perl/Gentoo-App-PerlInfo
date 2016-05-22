@@ -23,10 +23,6 @@ my $VERSION			= '0.17';
 use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
 
-my $pxs = $instance->_pxs;
-
-# - Do some basic checks >
-die "PORTDIR not set or incorrect! Aborting.." if !-d $pxs->portdir;
 $instance->run;
 
 $instance->_print_section_label("Perl configuration");
@@ -41,6 +37,7 @@ foreach (@INC) {
 }
 print "\n";
 
+my $pxs = $instance->_pxs;
 foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	my $category_str_length = length($this_category)+1;
 	my $seen = 0;
