@@ -58,6 +58,21 @@ sub use_for {
     return sprintf q[USE="%s"], join q[ ], @use;
 }
 
+sub eclass_desc {
+    my ( $self, $eclassName ) = @_;
+    my $eclass = path( $self->_pxs->portdir(), "eclass", "$eclassName.eclass" );
+    if ( !-e $eclass ) {
+        return "does not exist";
+    }
+    my $content = $eclass->slurp();
+    my @parts;
+    if ( $content =~ /\A\s*#\s*Copyright\s*\d+-(\d+)\s*Gentoo\s*Foundation/ ) {
+        push @parts, sprintf q[year: %4s], $1;
+    }
+    unshift @parts, sprintf q[sha1: %36s], sha1_hex($content);
+    return join q[ ], @parts;
+}
+
 sub _pxs        { $_[0]->{_pxs} }
 sub config_vars { $_[0]->{config_vars} }
 1;
