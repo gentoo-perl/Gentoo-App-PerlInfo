@@ -1,4 +1,4 @@
-use 5.006;  # our
+use 5.006;    # our
 use strict;
 use warnings;
 
@@ -10,6 +10,41 @@ our $VERSION = '0.17';
 
 # AUTHORITY
 
+use Term::ANSIColor;
+use PortageXS v0.3.0;
+use Path::Tiny qw( path );
+use Digest::SHA1 qw( sha1_hex );
+
+sub new {
+    my ( $class, @args ) = @_;
+    my $config = { ref $args[0] ? %{ $args[0] } : @args };
+    my $self = bless $config, $class;
+    $self->{config_vars} = [ $self->default_config_vars ]
+      unless exists $self->{config_vars};
+    $self->{_pxs} = PortageXS->new() unless exists $self->{_pxs};
+    return $self;
+}
+
+sub new_with_args {
+    my ( $class, @args ) = @_;
+
+    # TODO: Handle options here.
+    return $class->new();
+}
+
+sub default_config_vars {
+    qw(osname osvers archname uname useposix usethreads use5005threads
+      useithreads usemultiplicity useperlio uselargefiles usesocks use64bitint
+      use64bitall uselongdouble usemymalloc bincompat5005 cc ccflags optimize
+      cppflags ccversion gccversion gccosandver intsize longsize ptrsize doublesize
+      byteorder d_longlong longlongsize d_longdbl longdblsize ivtype ivsize nvtype
+      nvsize Off_t lseeksize alignbytes prototype ld ldflags libpth libs perllibs
+      libc so useshrplib libperl gnulibc_version dlsrc dlext d_dlsymun ccdlflags
+      cccdlflags lddlflags);
+}
+
+sub _pxs        { $_[0]->{_pxs} }
+sub config_vars { $_[0]->{config_vars} }
 1;
 
 __END__

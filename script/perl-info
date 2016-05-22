@@ -19,15 +19,12 @@ use Digest::SHA1 qw( sha1_hex );
 
 # - init vars & constants >
 my $VERSION			= '0.17';
-my $pxs				= PortageXS->new();
-my @perlGetVars			= qw(osname osvers archname uname useposix usethreads use5005threads
-				     useithreads usemultiplicity useperlio uselargefiles usesocks use64bitint
-				     use64bitall uselongdouble usemymalloc bincompat5005 cc ccflags optimize
-				     cppflags ccversion gccversion gccosandver intsize longsize ptrsize doublesize
-				     byteorder d_longlong longlongsize d_longdbl longdblsize ivtype ivsize nvtype
-				     nvsize Off_t lseeksize alignbytes prototype ld ldflags libpth libs perllibs
-				     libc so useshrplib libperl gnulibc_version dlsrc dlext d_dlsymun ccdlflags
-				     cccdlflags lddlflags);
+
+use Gentoo::App::PerlInfo;
+my $instance = Gentoo::App::PerlInfo->new_with_args();
+
+my $pxs = $instance->_pxs;
+my @perlGetVars = @{ $instance->config_vars };
 
 # - Print header >
 print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION." - brought to you by the Gentoo perl-herd-maintainer ;-)\n";
