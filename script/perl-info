@@ -22,12 +22,9 @@ my $VERSION			= '0.17';
 
 use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
+$instance->_print_header;
 
 my $pxs = $instance->_pxs;
-
-# - Print header >
-print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION." - brought to you by the Gentoo perl-herd-maintainer ;-)\n";
-print "                          Distributed under the terms of the GPL-2\n\n";
 
 # - Do some basic checks >
 die "PORTDIR not set or incorrect! Aborting.." if !-d $pxs->portdir;

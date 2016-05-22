@@ -10,7 +10,7 @@ our $VERSION = '0.17';
 
 # AUTHORITY
 
-use Term::ANSIColor;
+use Term::ANSIColor 2.01 qw( colored colorstrip );
 use PortageXS v0.3.0;
 use Path::Tiny qw( path );
 use Digest::SHA1 qw( sha1_hex );
@@ -91,6 +91,22 @@ sub perl_config {
         }
     }
     return @out;
+}
+
+sub run {
+    $_[0]->_print_header;
+}
+
+sub _print_header {
+
+    my $brand = sprintf "%s version %s -",
+      colored( [ 'green', 'bold' ], 'perl-info' ), $VERSION;
+    my $indent = ' ' x length( colorstrip($brand) );
+
+    print "\n",
+      "${brand} brought to you by the Gentoo perl-herd-maintainer ;-)\n",
+      "${indent} Distributed under the terms of the GPL-2\n",
+      "\n";
 }
 1;
 
