@@ -68,7 +68,7 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 }
 
 $pxs->colors->print_ok("eclasses:\n");
-foreach my $eclassName ("perl-app","perl-module") {
+foreach my $eclassName ("perl-app","perl-functions","perl-module") {
 	my $eclass = path($pxs->portdir(),"eclass",$eclassName.".eclass")->slurp;
 	my $year   = '';
 	if ( $eclass =~ /\A\s*#\s*Copyright\s*\d+-(\d+)\s*Gentoo\s*Foundation/ ) {

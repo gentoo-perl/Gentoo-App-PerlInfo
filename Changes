@@ -6,6 +6,7 @@
  - Uses modern print_ok methods.
  - Eclass revisions identified by Copyright year and SHA1 instead of (removed)
    CVS Headers
+ - perl-functions.eclass included in eclass report
 
 0.16 - 2010-11-03
  - Remove perl-post.eclass from reported eclass list
