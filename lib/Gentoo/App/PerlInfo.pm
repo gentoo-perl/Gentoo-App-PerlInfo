@@ -90,6 +90,16 @@ sub run {
     $_[0]->_print_perl_config;
     $_[0]->_print_section_label('INC');
     $_[0]->_print_inc;
+
+    for my $this_category ( $_[0]->_pxs->getPortageXScategorylist('perl') ) {
+        $_[0]->_print_section_label(
+            "Installed packages from category " . $this_category );
+        $_[0]->_print_category_contents( $this_category,
+            $_[0]->_pxs->searchInstalledPackage( $this_category . "/*" ) );
+    }
+    $_[0]->_print_section_label("Installed virtuals with perl- prefix");
+    $_[0]->_print_category_contents( 'virtual',
+        $_[0]->_pxs->searchInstalledPackage("virtual/perl-*") );
 }
 
 sub _print_header {
@@ -133,6 +143,21 @@ sub _print_perl_config {
         else {
             printf "$indent%-*s   does not exist\n", $max_width, $var;
         }
+    }
+    print "\n";
+}
+
+sub _print_category_contents {
+    my $indent = "  ";
+    my ( $self, $category_name, @contents ) = @_;
+    if ( not @contents ) {
+        print "${indent}none\n\n";
+        return;
+    }
+    for my $package (@contents) {
+        my $label = $package;
+        $label =~ s/\A\Q$category_name\E\///;
+        printf "${indent}%s %s\n", $label, $self->use_for($package);
     }
     print "\n";
 }

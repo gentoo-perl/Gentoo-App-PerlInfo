@@ -24,32 +24,6 @@ use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
 $instance->run;
 
-my $pxs = $instance->_pxs;
-foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
-	my $category_str_length = length($this_category)+1;
-	my $seen = 0;
-	$instance->_print_section_label("Installed packages from category ".$this_category);
-	foreach($pxs->searchInstalledPackage($this_category."/*")) {
-		$seen++;
-		print "   ".substr($_,$category_str_length,length($_)-$category_str_length). " " . $instance->use_for($_) . "\n";
-	}
-	print "   none\n" unless $seen;
-	print "\n";
-}
-
-foreach my $this_category ('virtual') {
-	my $category_str_length = length($this_category)+1;
-	$instance->_print_section_label("Installed virtuals with perl- prefix");
-	my $seen = 0;
-	foreach($pxs->searchInstalledPackage($this_category."/*")) {
-		next unless $_ =~ /virtual\/perl-/;
-		$seen++;
-		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." " . $instance->use_for($_) . "\n";
-	}
-	print "   none\n" unless $seen;
-	print "\n";
-}
-
 $instance->_print_section_label("eclasses");
 foreach my $eclassName ("perl-app","perl-functions","perl-module") {
 	printf "   %15s: %s\n", $eclassName, $instance->eclass_desc( $eclassName );
