@@ -43,6 +43,21 @@ sub default_config_vars {
       cccdlflags lddlflags);
 }
 
+sub package_installed {
+    my ( $self, $name ) = @_;
+    my (@results) = $self->_pxs->searchInstalledPackage($name);
+    if ( not @results ) {
+        return 'not installed';
+    }
+    return sprintf q[%s %s], $results[0], $self->use_for( $results[0] );
+}
+
+sub use_for {
+    my ( $self, $name ) = @_;
+    my (@use) = $self->_pxs->getUseSettingsOfInstalledPackage($name);
+    return sprintf q[USE="%s"], join q[ ], @use;
+}
+
 sub _pxs        { $_[0]->{_pxs} }
 sub config_vars { $_[0]->{config_vars} }
 1;

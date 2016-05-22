@@ -39,7 +39,7 @@ if (!-d $pxs->portdir()) {
 # - Start system analysis >
 $pxs->colors->print_ok("Systeminfo:\n");
 print "   Arch   : ".$pxs->getArch()."\n";
-print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage(($pxs->searchInstalledPackage("dev-lang/perl"))[0]))."\"\n";
+print "   Perl   : ". $instance->package_installed("dev-lang/perl") . "\n";
 print "\n";
 
 $pxs->colors->print_ok("Perl configuration:\n");
