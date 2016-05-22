@@ -42,7 +42,6 @@ if (!-d $pxs->portdir()) {
 $pxs->print_ok("Systeminfo:\n");
 print "   Arch   : ".$pxs->getArch()."\n";
 print "   Perl   : ".($pxs->searchInstalledPackage("dev-lang/perl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage(($pxs->searchInstalledPackage("dev-lang/perl"))[0]))."\"\n";
-print "   libperl: ".($pxs->searchInstalledPackage("sys-devel/libperl"))[0]." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage(($pxs->searchInstalledPackage("sys-devel/libperl"))[0]))."\"\n";
 print "\n";
 
 $pxs->print_ok("Perl configuration:\n");
