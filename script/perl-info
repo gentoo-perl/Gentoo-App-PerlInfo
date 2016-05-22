@@ -29,13 +29,13 @@ my $pxs = $instance->_pxs;
 die "PORTDIR not set or incorrect! Aborting.." if !-d $pxs->portdir;
 $instance->run;
 
-$pxs->colors->print_ok("Perl configuration:\n");
+$instance->_print_section_label("Perl configuration");
 foreach ($instance->perl_config) {
 	print "   $_\n";
 }
 print "\n";
 
-$pxs->colors->print_ok("INC:\n");
+$instance->_print_section_label("INC");
 foreach (@INC) {
 	print "   ".$_."\n";
 }
@@ -44,7 +44,7 @@ print "\n";
 foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	my $category_str_length = length($this_category)+1;
 	my $seen = 0;
-	$pxs->colors->print_ok("Installed packages from category ".$this_category.":\n");
+	$instance->_print_section_label("Installed packages from category ".$this_category);
 	foreach($pxs->searchInstalledPackage($this_category."/*")) {
 		$seen++;
 		print "   ".substr($_,$category_str_length,length($_)-$category_str_length). " " . $instance->use_for($_) . "\n";
@@ -55,7 +55,7 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 
 foreach my $this_category ('virtual') {
 	my $category_str_length = length($this_category)+1;
-	$pxs->colors->print_ok("Installed virtuals with perl- prefix:\n");
+	$instance->_print_section_label("Installed virtuals with perl- prefix");
 	my $seen = 0;
 	foreach($pxs->searchInstalledPackage($this_category."/*")) {
 		next unless $_ =~ /virtual\/perl-/;
@@ -66,7 +66,7 @@ foreach my $this_category ('virtual') {
 	print "\n";
 }
 
-$pxs->colors->print_ok("eclasses:\n");
+$instance->_print_section_label("eclasses");
 foreach my $eclassName ("perl-app","perl-functions","perl-module") {
 	printf "   %15s: %s\n", $eclassName, $instance->eclass_desc( $eclassName );
 }
