@@ -100,6 +100,9 @@ sub run {
     $_[0]->_print_section_label("Installed virtuals with perl- prefix");
     $_[0]->_print_category_contents( 'virtual',
         $_[0]->_pxs->searchInstalledPackage("virtual/perl-*") );
+    $_[0]->_print_section_label('eclasses');
+    $_[0]->_print_eclasses;
+    return 0;
 }
 
 sub _print_header {
@@ -166,6 +169,14 @@ sub _print_inc {
     my $indent = "  ";
     for my $inc (@INC) {
         printf "$indent%s\n", $inc;
+    }
+    print "\n";
+}
+
+sub _print_eclasses {
+    my $indent = "  ";
+    foreach my $eclassName ( "perl-app", "perl-functions", "perl-module" ) {
+        printf "   %15s: %s\n", $eclassName, $_[0]->eclass_desc($eclassName);
     }
     print "\n";
 }

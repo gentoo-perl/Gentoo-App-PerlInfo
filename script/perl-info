@@ -22,14 +22,7 @@ my $VERSION			= '0.17';
 
 use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
-$instance->run;
-
-$instance->_print_section_label("eclasses");
-foreach my $eclassName ("perl-app","perl-functions","perl-module") {
-	printf "   %15s: %s\n", $eclassName, $instance->eclass_desc( $eclassName );
-}
-print "\n";
-exit(0);
+exit $instance->run;
 
 # - Here comes the POD >
 
