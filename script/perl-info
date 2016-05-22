@@ -67,6 +67,19 @@ foreach my $this_category ($pxs->getPortageXScategorylist('perl')) {
 	print "\n";
 }
 
+foreach my $this_category ('virtual') {
+	my $category_str_length = length($this_category)+1;
+	$pxs->colors->print_ok("Installed virtuals with perl- prefix:\n");
+	my $seen = 0;
+	foreach($pxs->searchInstalledPackage($this_category."/*")) {
+		next unless $_ =~ /virtual\/perl-/;
+		$seen++;
+		print "   ".substr($_,$category_str_length,length($_)-$category_str_length)." USE=\"".join(" ",$pxs->getUseSettingsOfInstalledPackage($_))."\"\n";
+	}
+	print "   none\n" unless $seen;
+	print "\n";
+}
+
 $pxs->colors->print_ok("eclasses:\n");
 foreach my $eclassName ("perl-app","perl-functions","perl-module") {
 	my $eclass = path($pxs->portdir(),"eclass",$eclassName.".eclass")->slurp;
