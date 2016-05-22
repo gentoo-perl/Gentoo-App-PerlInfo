@@ -1,0 +1,17 @@
+{
+  "resources":{
+    "repository":{
+      "type":"git",
+      "url":"https://github.com/gentoo-perl/Gentoo-App-PerlInfo",
+      "web":"https://github.com/gentoo-perl/Gentoo-App-PerlInfo"
+    },
+    "bugtracker":{
+      "web":"https://github.com/gentoo-perl/Gentoo-App-PerlInfo/issues"
+    }
+  },
+  "x_contributors": [
+    "Kent Fredric <kentnl@cpan.org>",
+    "Torsten Veller <tove@gentoo.org>",
+    "Yuval Yaari <yuval@gentoo.org>"
+  ]
+}
