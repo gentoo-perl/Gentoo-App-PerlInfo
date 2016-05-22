@@ -30,10 +30,7 @@ print "\n".color('green bold')." perl-info".color('reset')." version ".$VERSION.
 print "                          Distributed under the terms of the GPL-2\n\n";
 
 # - Do some basic checks >
-if (!-d $pxs->portdir()) {
-	print_err("PORTDIR not set or incorrect! Aborting..\n");
-	exit(0);
-}
+die "PORTDIR not set or incorrect! Aborting.." if !-d $pxs->portdir;
 
 # - Start system analysis >
 $pxs->colors->print_ok("Systeminfo:\n");
