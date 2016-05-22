@@ -9,22 +9,18 @@
 #
 # -----------------------------------------------------------------------------
 
-# - modules >
 use warnings;
 use strict;
-use Term::ANSIColor;
-use PortageXS v0.3.0;
-use Path::Tiny qw( path );
-use Digest::SHA1 qw( sha1_hex );
 
-# - init vars & constants >
-my $VERSION			= '0.17';
+our $VERSION = '0.17';
 
 use Gentoo::App::PerlInfo;
 my $instance = Gentoo::App::PerlInfo->new_with_args();
 exit $instance->run;
 
-# - Here comes the POD >
+1;
+
+__END__
 
 =head1 NAME
 
