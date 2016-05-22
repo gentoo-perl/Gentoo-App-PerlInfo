@@ -25,12 +25,6 @@ my $instance = Gentoo::App::PerlInfo->new_with_args();
 
 $instance->run;
 
-$instance->_print_section_label("Perl configuration");
-foreach ($instance->perl_config) {
-	print "   $_\n";
-}
-print "\n";
-
 $instance->_print_section_label("INC");
 foreach (@INC) {
 	print "   ".$_."\n";

@@ -77,22 +77,6 @@ sub eclass_desc {
 sub _pxs        { $_[0]->{_pxs} }
 sub config_vars { $_[0]->{config_vars} }
 
-sub perl_config {
-    my @out;
-    for my $var ( sort @{ $_[0]->config_vars } ) {
-        if ( exists $Config{$var} and defined $Config{$var} ) {
-            push @out, $var . '="' . $Config{$var} . '"';
-        }
-        elsif ( exists $Config{$var} ) {
-            push @out, $var . '=undef';
-        }
-        else {
-            push @out, $var . ': does not exist';
-        }
-    }
-    return @out;
-}
-
 sub check_env {
     die "PORTDIR not set or incorrect! Aborting.." if !-d $_[0]->_pxs->portdir;
 }
@@ -102,6 +86,8 @@ sub run {
     $_[0]->check_env;
     $_[0]->_print_section_label('Systeminfo');
     $_[0]->_print_system_info;
+    $_[0]->_print_section_label('Perl configuration');
+    $_[0]->_print_perl_config;
 }
 
 sub _print_header {
@@ -126,6 +112,26 @@ sub _print_system_info {
     my $perl = $_[0]->package_installed('dev-lang/perl');
     printf "  Arch  : %s\n", $arch;
     printf "  Perl  : %s\n", $perl;
+    print "\n";
+}
+
+sub _print_perl_config {
+    my $indent    = "  ";
+    my $max_width = 0;
+    for my $var ( sort @{ $_[0]->config_vars } ) {
+        $max_width = length $var if $max_width < length $var;
+    }
+    for my $var ( sort @{ $_[0]->config_vars } ) {
+        if ( exists $Config{$var} and defined $Config{$var} ) {
+            printf "$indent%-*s = \"%s\"\n", $max_width, $var, $Config{$var};
+        }
+        elsif ( exists $Config{$var} ) {
+            printf "$indent%-*s = undef\n", $max_width, $var;
+        }
+        else {
+            printf "$indent%-*s   does not exist\n", $max_width, $var;
+        }
+    }
     print "\n";
 }
 
